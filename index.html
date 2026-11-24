@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CalcElétrica — Ferramenta de Campo e Bancada</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-2: #273549;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --accent-soft: rgba(245, 158, 11, 0.15);
+      --success: #10b981;
+      --success-soft: rgba(16, 185, 129, 0.15);
+      --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.15);
+      --whatsapp: #22c55e;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding-bottom: 32px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-inner {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .brand h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand span {
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: block;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: var(--surface-2);
+      color: var(--accent);
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: var(--surface);
+      padding: 6px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 10px 6px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Cards & Forms */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 11px 12px;
+      border-radius: 8px;
+      font-size: 16px; /* Evita zoom automático no celular */
+      outline: none;
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    /* Quick Chips */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .chip {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Segmented toggle */
+    .seg-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+
+    .seg-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 7px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .seg-btn.active {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    /* Results Box */
+    .result-card {
+      background: linear-gradient(180deg, var(--surface) 0%, #162032 100%);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .metric {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .metric.highlight {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .metric-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .metric.highlight .metric-value {
+      color: var(--accent);
+    }
+
+    .metric-sub {
+      font-size: 0.74rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .alert {
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .alert.warn {
+      display: block;
+      background: var(--danger-soft);
+      border: 1px solid var(--danger);
+      color: #fca5a5;
+    }
+
+    .alert.ok {
+      display: block;
+      background: var(--success-soft);
+      border: 1px solid var(--success);
+      color: #6ee7b7;
+    }
+
+    /* Action Buttons */
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: opacity 0.15s;
+    }
+
+    .btn:active {
+      opacity: 0.8;
+    }
+
+    .btn-copy {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-wa {
+      background: var(--whatsapp);
+      color: #052e16;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--bg);
+      padding: 10px 18px;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 50;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <h1>CalcElétrica</h1>
+          <span>Dimensionamento, Baterias &amp; Consumo</span>
+        </div>
+      </div>
+      <div class="badge">OFFLINE OK</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Navegação por Abas -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('cabos', this)">1. Cabos &amp; Disj.</button>
+      <button class="tab-btn" onclick="switchTab('bateria', this)">2. Bateria / UPS</button>
+      <button class="tab-btn" onclick="switchTab('consumo', this)">3. Conv. &amp; kWh</button>
+    </div>
+
+    <!-- ==================== ABA 1: CABOS E DISJUNTORES ==================== -->
+    <div id="tab-cabos" class="tab-panel active">
+      <div class="card">
+        <div class="card-title">Parâmetros do Circuito</div>
+
+        <div class="form-group">
+          <label>Tipo de Sistema</label>
+          <select id="cabo-sistema" onchange="calcCabos()">
+            <option value="mono">Monofásico / Bifásico (CA - 2 condutores)</option>
+            <option value="tri">Trifásico (CA - 3 condutores)</option>
+            <option value="cc">Corrente Contínua (CC - Automotivo / Solar / 12V-24V)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tensão Nominal (Volts)</label>
+          <div class="chips" id="chips-tensao">
+            <button type="button" class="chip" onclick="setTensao(12)">12V</button>
+            <button type="button" class="chip" onclick="setTensao(24)">24V</button>
+            <button type="button" class="chip" onclick="setTensao(127)">127V</button>
+            <button type="button" class="chip active" onclick="setTensao(220)">220V</button>
+            <button type="button" class="chip" onclick="setTensao(380)">380V</button>
+          </div>
+          <input type="number" id="cabo-tensao" value="220" min="1" step="any" oninput="calcCabos()" />
+        </div>
+
+        <div class="row-2 form-group">
+          <div>
+            <label>Distância do Lance (m)</label>
+            <input type="number" id="cabo-dist" value="30" min="0.5" step="any" oninput="calcCabos()" />
+          </div>
+          <div>
+            <label>Queda Máx. Aceita</label>
+            <select id="cabo-queda-max" onchange="calcCabos()">
+              <option value="2">2% (Sensível / LED)</option>
+              <option value="4" selected>4% (Padrão NBR 5410)</option>
+              <option value="5">5% (Limite Máximo)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Carga do Circuito</label>
+          <div class="seg-toggle">
+            <button type="button" id="btn-modo-w" class="seg-btn active" onclick="setModoCarga('W')">Por Potência (Watts)</button>
+            <button type="button" id="btn-modo-a" class="seg-btn" onclick="setModoCarga('A')">Por Corrente (Amperes)</button>
+          </div>
+          <div class="row-2">
+            <div>
+              <label id="lbl-carga-valor">Potência Total (W)</label>
+              <input type="number" id="cabo-carga" value="2500" min="0.1" step="any" oninput="calcCabos()" />
+            </div>
+            <div>
+              <label>Fator de Potência (FP)</label>
+              <input type="number" id="cabo-fp" value="0.92" min="0.1" max="1" step="0.01" oninput="calcCabos()" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Material do Condutor</label>
+          <select id="cabo-material" onchange="calcCabos()">
+            <option value="cobre" selected>Cobre (Padrão - Isolação PVC 70°C)</option>
+            <option value="aluminio">Alumínio (Redes / Ramais maiores)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="card-title">Resultado Recomendado</div>
+        <div id="cabo-alert" class="alert ok">Circuito dentro dos parâmetros normativos.</div>
+
+        <div class="result-grid">
+          <div class="metric highlight">
+            <div class="metric-label">Bitola Mínima</div>
+            <div class="metric-value" id="res-bitola">2,5 mm²</div>
+            <div class="metric-sub" id="res-cap-cabo">Suporta até 21 A</div>
+          </div>
+          <div class="metric highlight">
+            <div class="metric-label">Disjuntor Sugerido</div>
+            <div class="metric-value" id="res-disjuntor">16 A</div>
+            <div class="metric-sub" id="res-corrente">Corrente: 12,35 A</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Queda de Tensão</div>
+            <div class="metric-value" id="res-queda">1,85%</div>
+            <div class="metric-sub" id="res-queda-v">-4,07 V no final</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Tensão na Carga</div>
+            <div class="metric-value" id="res-v-final">215,9 V</div>
+            <div class="metric-sub" id="res-pot-equiv">Potência: 2.500 W</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-copy" onclick="copySummary('cabos')">📋 Copiar Resumo</button>
+          <button type="button" class="btn btn-wa" onclick="sendWhatsApp('cabos')">📲 WhatsApp</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== ABA 2: AUTONOMIA DE BATERIA ==================== -->
+    <div id="tab-bateria" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Banco de Baterias e Carga</div>
+
+        <div class="row-2 form-group">
+          <div>
+            <label>Tensão do Banco (V)</label>
+            <select id="bat-tensao" onchange="calcBateria()">
+              <option value="12" selected>12V</option>
+              <option value="24">24V</option>
+              <option value="48">48V</option>
+            </select>
+          </div>
+          <div>
+            <label>Qtd. em Paralelo</label>
+            <input type="number" id="bat-qtd" value="1" min="1" step="1" oninput="calcBateria()" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Capacidade de Cada Bateria (Ah)</label>
+          <div class="chips">
+            <button type="button" class="chip" onclick="setBatAh(7)">7Ah</button>
+            <button type="button" class="chip" onclick="setBatAh(45)">45Ah</button>
+            <button type="button" class="chip active" onclick="setBatAh(60)">60Ah</button>
+            <button type="button" class="chip" onclick="setBatAh(100)">100Ah</button>
+            <button type="button" class="chip" onclick="setBatAh(150)">150Ah</button>
+          </div>
+          <input type="number" id="bat-ah" value="60" min="1" step="any" oninput="calcBateria()" />
+        </div>
+
+        <div class="form-group">
+          <label>Tecnologia / Margem de Segurança (DoD)</label>
+          <select id="bat-dod" onchange="calcBateria()">
+            <option value="0.50" selected>Chumbo-Ácido / Automotiva / Estacionária (50% útil)</option>
+            <option value="0.60">VRLA / AGM Nobreak (60% útil)</option>
+            <option value="0.80">Lítio LiFePO4 (80% útil)</option>
+          </select>
+        </div>
+
+        <div class="row-2 form-group">
+          <div>
+            <label>Consumo dos Aparelhos (W)</label>
+            <input type="number" id="bat-watts" value="80" min="1" step="any" oninput="calcBateria()" />
+          </div>
+          <div>
+            <label>Tipo de Alimentação</label>
+            <select id="bat-eficiencia" onchange="calcBateria()">
+              <option value="0.98">Direto em CC (12V/24V - 98%)</option>
+              <option value="0.85" selected>Via Inversor / Nobreak (85%)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="card-title">Autonomia Estimada</div>
+
+        <div class="result-grid">
+          <div class="metric highlight">
+            <div class="metric-label">Autonomia Segura</div>
+            <div class="metric-value" id="res-bat-tempo">3h 49min</div>
+            <div class="metric-sub">Preserva vida útil</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Descarga Total (100%)</div>
+            <div class="metric-value" id="res-bat-total">7h 39min</div>
+            <div class="metric-sub">Até zerar a bateria</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Capacidade Total</div>
+            <div class="metric-value" id="res-bat-wh">720 Wh</div>
+            <div class="metric-sub" id="res-bat-ah-tot">60 Ah em 12V</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Corrente Drenada</div>
+            <div class="metric-value" id="res-bat-amp">7,84 A</div>
+            <div class="metric-sub">Consumo real na bateria</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-copy" onclick="copySummary('bateria')">📋 Copiar Resumo</button>
+          <button type="button" class="btn btn-wa" onclick="sendWhatsApp('bateria')">📲 WhatsApp</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== ABA 3: CONVERSOR E CONSUMO ==================== -->
+    <div id="tab-consumo" class="tab-panel">
+      <!-- Conversor Rápido W / V / A -->
+      <div class="card">
+        <div class="card-title">Conversor Rápido (W • V • A)</div>
+
+        <div class="form-group">
+          <label>O que você quer descobrir?</label>
+          <select id="conv-alvo" onchange="updateConvLabels()">
+            <option value="A" selected>Descobrir Corrente (Amperes - A)</option>
+            <option value="W">Descobrir Potência (Watts - W)</option>
+            <option value="V">Descobrir Tensão (Volts - V)</option>
+          </select>
+        </div>
+
+        <div class="row-2 form-group">
+          <div>
+            <label id="lbl-conv-1">Potência (Watts)</label>
+            <input type="number" id="conv-in-1" value="1500" min="0.01" step="any" oninput="calcConv()" />
+          </div>
+          <div>
+            <label id="lbl-conv-2">Tensão (Volts)</label>
+            <input type="number" id="conv-in-2" value="127" min="0.01" step="any" oninput="calcConv()" />
+          </div>
+        </div>
+
+        <div class="metric highlight" style="margin-top: 8px;">
+          <div class="metric-label" id="res-conv-lbl">Corrente Calculada</div>
+          <div class="metric-value" id="res-conv-val">11,81 A</div>
+          <div class="metric-sub" id="res-conv-sub">Baseado em 1.500 W a 127 V (FP 1,0)</div>
+        </div>
+      </div>
+
+      <!-- Simulador de Consumo kWh -->
+      <div class="card">
+        <div class="card-title">Custo de Energia (kWh e R$)</div>
+
+        <div class="form-group">
+          <label>Potência do Equipamento (Watts)</label>
+          <div class="chips">
+            <button type="button" class="chip" onclick="setConsumoW(50)">LED 50W</button>
+            <button type="button" class="chip" onclick="setConsumoW(150)">Semáforo 150W</button>
+            <button type="button" class="chip active" onclick="setConsumoW(500)">500W</button>
+            <button type="button" class="chip" onclick="setConsumoW(1200)">Ar 1200W</button>
+          </div>
+          <input type="number" id="cons-watts" value="500" min="1" step="any" oninput="calcConsumo()" />
+        </div>
+
+        <div class="row-2 form-group">
+          <div>
+            <label>Horas por Dia</label>
+            <input type="number" id="cons-horas" value="8" min="0.1" max="24" step="any" oninput="calcConsumo()" />
+          </div>
+          <div>
+            <label>Dias no Mês</label>
+            <input type="number" id="cons-dias" value="30" min="1" max="31" step="1" oninput="calcConsumo()" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Tarifa de Energia (R$ / kWh)</label>
+          <input type="number" id="cons-tarifa" value="0.85" min="0.01" step="0.01" oninput="calcConsumo()" />
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="card-title">Gasto Estimado</div>
+
+        <div class="result-grid">
+          <div class="metric highlight">
+            <div class="metric-label">Consumo Mensal</div>
+            <div class="metric-value" id="res-cons-kwh">120,0 kWh</div>
+            <div class="metric-sub" id="res-cons-dia">4,00 kWh / dia</div>
+          </div>
+          <div class="metric highlight">
+            <div class="metric-label">Custo Mensal</div>
+            <div class="metric-value" id="res-cons-rs">R$ 102,00</div>
+            <div class="metric-sub" id="res-cons-rs-dia">R$ 3,40 / dia</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-copy" onclick="copySummary('consumo')">📋 Copiar Resumo</button>
+          <button type="button" class="btn btn-wa" onclick="sendWhatsApp('consumo')">📲 WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Resumo copiado!</div>
+
+  <script>
+    // Tabelas comerciais de cabos (bitola em mm² e capacidade de corrente em A - Ref. B1 Cobre)
+    const CABOS_COMERCIAIS = [
+      { bitola: 1.5, ampCobre: 15.5 },
+      { bitola: 2.5, ampCobre: 21 },
+      { bitola: 4.0, ampCobre: 28 },
+      { bitola: 6.0, ampCobre: 36 },
+      { bitola: 10.0, ampCobre: 50 },
+      { bitola: 16.0, ampCobre: 68 },
+      { bitola: 25.0, ampCobre: 89 },
+      { bitola: 35.0, ampCobre: 110 },
+      { bitola: 50.0, ampCobre: 134 },
+      { bitola: 70.0, ampCobre: 171 },
+      { bitola: 95.0, ampCobre: 207 },
+      { bitola: 120.0, ampCobre: 239 },
+      { bitola: 150.0, ampCobre: 272 },
+      { bitola: 185.0, ampCobre: 310 },
+      { bitola: 240.0, ampCobre: 364 }
+    ];
+
+    const DISJUNTORES_DIN = [6, 10, 16, 20, 25, 32, 40, 50, 63, 70, 80, 100, 125, 150, 175, 200, 250, 300];
+
+    let modoCarga = 'W';
+    let summaries = { cabos: '', bateria: '', consumo: '' };
+
+    function fmt(num, dec = 2) {
+      return num.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    }
+
+    function switchTab(tabName, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabName).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // ==================== LÓGICA ABA 1: CABOS ====================
+    function setTensao(v) {
+      document.getElementById('cabo-tensao').value = v;
+      document.querySelectorAll('#chips-tensao .chip').forEach(c => {
+        c.classList.toggle('active', c.textContent === v + 'V');
+      });
+      if (v === 12 || v === 24) {
+        document.getElementById('cabo-sistema').value = 'cc';
+        document.getElementById('cabo-fp').value = '1.00';
+      } else if (v === 380) {
+        document.getElementById('cabo-sistema').value = 'tri';
+      }
+      calcCabos();
+    }
+
+    function setModoCarga(modo) {
+      modoCarga = modo;
+      document.getElementById('btn-modo-w').classList.toggle('active', modo === 'W');
+      document.getElementById('btn-modo-a').classList.toggle('active', modo === 'A');
+      document.getElementById('lbl-carga-valor').textContent = modo === 'W' ? 'Potência Total (W)' : 'Corrente Total (A)';
+      calcCabos();
+    }
+
+    function calcCabos() {
+      const sistema = document.getElementById('cabo-sistema').value;
+      const V = parseFloat(document.getElementById('cabo-tensao').value) || 0;
+      const L = parseFloat(document.getElementById('cabo-dist').value) || 0;
+      const quedaMax = parseFloat(document.getElementById('cabo-queda-max').value) || 4;
+      const cargaVal = parseFloat(document.getElementById('cabo-carga').value) || 0;
+      let fp = parseFloat(document.getElementById('cabo-fp').value) || 1;
+      const material = document.getElementById('cabo-material').value;
+
+      if (sistema === 'cc') {
+        fp = 1;
+      } else {
+        fp = Math.min(1, Math.max(0.1, fp));
+      }
+
+      if (V <= 0 || L <= 0 || cargaVal <= 0) return;
+
+      const rho = material === 'cobre' ? 0.0172 : 0.0282;
+      const fatorAmp = material === 'cobre' ? 1 : 0.78;
+      const fatorSistema = sistema === 'tri' ? Math.sqrt(3) : 2;
+
+      let I = 0;
+      let P = 0;
+
+      if (modoCarga === 'W') {
+        P = cargaVal;
+        I = sistema === 'tri' ? P / (Math.sqrt(3) * V * fp) : P / (V * fp);
+      } else {
+        I = cargaVal;
+        P = sistema === 'tri' ? Math.sqrt(3) * V * I * fp : V * I * fp;
+      }
+
+      const deltaVMaxVolts = V * (quedaMax / 100);
+      const bitolaTeoricaQueda = (fatorSistema * rho * L * I) / deltaVMaxVolts;
+
+      // Escolhe bitola comercial que atende queda de tensão E ampacidade
+      let escolhido = CABOS_COMERCIAIS[CABOS_COMERCIAIS.length - 1];
+      let atende = false;
+
+      for (const cabo of CABOS_COMERCIAIS) {
+        const capReal = cabo.ampCobre * fatorAmp;
+        if (cabo.bitola >= bitolaTeoricaQueda && capReal >= I) {
+          escolhido = cabo;
+          atende = true;
+          break;
+        }
+      }
+
+      const capEscolhida = escolhido.ampCobre * fatorAmp;
+      const quedaRealVolts = (fatorSistema * rho * L * I) / escolhido.bitola;
+      const quedaRealPct = (quedaRealVolts / V) * 100;
+      const vFinal = Math.max(0, V - quedaRealVolts);
+
+      // Disjuntor comercial entre I e capEscolhida
+      let disj = DISJUNTORES_DIN.find(d => d >= I && d <= capEscolhida);
+      if (!disj) {
+        disj = DISJUNTORES_DIN.find(d => d >= I) || DISJUNTORES_DIN[DISJUNTORES_DIN.length - 1];
+      }
+
+      document.getElementById('res-bitola').textContent = fmt(escolhido.bitola, 1) + ' mm²';
+      document.getElementById('res-cap-cabo').textContent = `Suporta até ${fmt(capEscolhida, 1)} A`;
+      document.getElementById('res-disjuntor').textContent = `${disj} A`;
+      document.getElementById('res-corrente').textContent = `Corrente: ${fmt(I, 2)} A`;
+      document.getElementById('res-queda').textContent = `${fmt(quedaRealPct, 2)}%`;
+      document.getElementById('res-queda-v').textContent = `-${fmt(quedaRealVolts, 2)} V no final`;
+      document.getElementById('res-v-final').textContent = `${fmt(vFinal, 1)} V`;
+      document.getElementById('res-pot-equiv').textContent = `Potência: ${fmt(P, 0)} W`;
+
+      const alertBox = document.getElementById('cabo-alert');
+      if (!atende) {
+        alertBox.className = 'alert warn';
+        alertBox.textContent = '⚠️ Carga ou distância muito alta para um único condutor até 240 mm². Considere circuitos paralelos ou elevar a tensão.';
+      } else if (quedaRealPct > quedaMax) {
+        alertBox.className = 'alert warn';
+        alertBox.textContent = `⚠️ Queda de tensão (${fmt(quedaRealPct, 2)}%) acima do limite de ${quedaMax}%.`;
+      } else {
+        alertBox.className = 'alert ok';
+        alertBox.textContent = `✅ Dimensionamento OK (Queda de ${fmt(quedaRealPct, 2)}% dentro do limite de ${quedaMax}%).`;
+      }
+
+      const nomeSist = sistema === 'tri' ? 'Trifásico' : (sistema === 'cc' ? 'Corrente Contínua (CC)' : 'Mono/Bifásico');
+      summaries.cabos =
+        `⚡ *CalcElétrica — Cabos e Disjuntor*\n` +
+        `• Sistema: ${nomeSist} (${V}V)\n` +
+        `• Distância: ${L} m | Carga: ${fmt(P, 0)} W (${fmt(I, 2)} A)\n` +
+        `• Cabo indicado: *${fmt(escolhido.bitola, 1)} mm²* (${material})\n` +
+        `• Disjuntor sugerido: *${disj} A*\n` +
+        `• Queda de tensão: ${fmt(quedaRealPct, 2)}% (chega ${fmt(vFinal, 1)} V)`;
+    }
+
+    // ==================== LÓGICA ABA 2: BATERIA ====================
+    function setBatAh(ah) {
+      document.getElementById('bat-ah').value = ah;
+      document.querySelectorAll('#tab-bateria .chip').forEach(c => {
+        c.classList.toggle('active', c.textContent === ah + 'Ah');
+      });
+      calcBateria();
+    }
+
+    function formatHours(hours) {
+      if (!isFinite(hours) || hours <= 0) return '0min';
+      const h = Math.floor(hours);
+      const m = Math.round((hours - h) * 60);
+      if (h === 0) return `${m}min`;
+      if (m === 60) return `${h + 1}h 00min`;
+      return `${h}h ${m < 10 ? '0' + m : m}min`;
+    }
+
+    function calcBateria() {
+      const V = parseFloat(document.getElementById('bat-tensao').value) || 12;
+      const qtd = parseInt(document.getElementById('bat-qtd').value) || 1;
+      const ahUnit = parseFloat(document.getElementById('bat-ah').value) || 0;
+      const dod = parseFloat(document.getElementById('bat-dod').value) || 0.5;
+      const watts = parseFloat(document.getElementById('bat-watts').value) || 0;
+      const efic = parseFloat(document.getElementById('bat-eficiencia').value) || 0.85;
+
+      if (ahUnit <= 0 || watts <= 0 || qtd <= 0) return;
+
+      const ahTotal = ahUnit * qtd;
+      const whTotal = V * ahTotal;
+      const whUtil = whTotal * dod * efic;
+      const whMaxComPerda = whTotal * efic;
+
+      const horasSeguras = whUtil / watts;
+      const horasTotais = whMaxComPerda / watts;
+      const ampDrenada = (watts / efic) / V;
+
+      document.getElementById('res-bat-tempo').textContent = formatHours(horasSeguras);
+      document.getElementById('res-bat-total').textContent = formatHours(horasTotais);
+      document.getElementById('res-bat-wh').textContent = `${fmt(whTotal, 0)} Wh`;
+      document.getElementById('res-bat-ah-tot').textContent = `${fmt(ahTotal, 0)} Ah em ${V}V`;
+      document.getElementById('res-bat-amp').textContent = `${fmt(ampDrenada, 2)} A`;
+
+      summaries.bateria =
+        `🔋 *CalcElétrica — Autonomia de Bateria*\n` +
+        `• Banco: ${qtd}x ${ahUnit}Ah (${fmt(ahTotal, 0)}Ah total) em ${V}V\n` +
+        `• Carga conectada: ${fmt(watts, 0)} W (${fmt(ampDrenada, 2)} A drenados)\n` +
+        `• Autonomia segura (${Math.round(dod * 100)}% útil): *${formatHours(horasSeguras)}*\n` +
+        `• Descarga total (100%): ${formatHours(horasTotais)}`;
+    }
+
+    // ==================== LÓGICA ABA 3: CONVERSOR & CONSUMO ====================
+    function updateConvLabels() {
+      const alvo = document.getElementById('conv-alvo').value;
+      const l1 = document.getElementById('lbl-conv-1');
+      const l2 = document.getElementById('lbl-conv-2');
+      if (alvo === 'A') {
+        l1.textContent = 'Potência (Watts)';
+        l2.textContent = 'Tensão (Volts)';
+      } else if (alvo === 'W') {
+        l1.textContent = 'Tensão (Volts)';
+        l2.textContent = 'Corrente (Amperes)';
+      } else {
+        l1.textContent = 'Potência (Watts)';
+        l2.textContent = 'Corrente (Amperes)';
+      }
+      calcConv();
+    }
+
+    function calcConv() {
+      const alvo = document.getElementById('conv-alvo').value;
+      const v1 = parseFloat(document.getElementById('conv-in-1').value) || 0;
+      const v2 = parseFloat(document.getElementById('conv-in-2').value) || 0;
+      if (v1 <= 0 || v2 <= 0) return;
+
+      const lbl = document.getElementById('res-conv-lbl');
+      const val = document.getElementById('res-conv-val');
+      const sub = document.getElementById('res-conv-sub');
+
+      if (alvo === 'A') {
+        const res = v1 / v2;
+        lbl.textContent = 'Corrente Calculada';
+        val.textContent = `${fmt(res, 2)} A`;
+        sub.textContent = `${fmt(v1, 0)} W ÷ ${fmt(v2, 0)} V`;
+      } else if (alvo === 'W') {
+        const res = v1 * v2;
+        lbl.textContent = 'Potência Calculada';
+        val.textContent = `${fmt(res, 1)} W`;
+        sub.textContent = `${fmt(v1, 0)} V × ${fmt(v2, 2)} A`;
+      } else {
+        const res = v1 / v2;
+        lbl.textContent = 'Tensão Calculada';
+        val.textContent = `${fmt(res, 1)} V`;
+        sub.textContent = `${fmt(v1, 0)} W ÷ ${fmt(v2, 2)} A`;
+      }
+    }
+
+    function setConsumoW(w) {
+      document.getElementById('cons-watts').value = w;
+      document.querySelectorAll('#tab-consumo .chip').forEach(c => {
+        c.classList.toggle('active', c.textContent.includes(w + 'W'));
+      });
+      calcConsumo();
+    }
+
+    function calcConsumo() {
+      const w = parseFloat(document.getElementById('cons-watts').value) || 0;
+      const h = parseFloat(document.getElementById('cons-horas').value) || 0;
+      const d = parseInt(document.getElementById('cons-dias').value) || 0;
+      const tarifa = parseFloat(document.getElementById('cons-tarifa').value) || 0;
+
+      if (w <= 0 || h <= 0 || d <= 0) return;
+
+      const kwhDia = (w * h) / 1000;
+      const kwhMes = kwhDia * d;
+      const rsDia = kwhDia * tarifa;
+      const rsMes = kwhMes * tarifa;
+
+      document.getElementById('res-cons-kwh').textContent = `${fmt(kwhMes, 1)} kWh`;
+      document.getElementById('res-cons-dia').textContent = `${fmt(kwhDia, 2)} kWh / dia`;
+      document.getElementById('res-cons-rs').textContent = `R$ ${fmt(rsMes, 2)}`;
+      document.getElementById('res-cons-rs-dia').textContent = `R$ ${fmt(rsDia, 2)} / dia`;
+
+      summaries.consumo =
+        `💡 *CalcElétrica — Estimativa de Consumo*\n` +
+        `• Equipamento: ${fmt(w, 0)} W (${h}h/dia × ${d} dias)\n` +
+        `• Consumo mensal: *${fmt(kwhMes, 1)} kWh* (${fmt(kwhDia, 2)} kWh/dia)\n` +
+        `• Custo estimado (R$ ${fmt(tarifa, 2)}/kWh): *R$ ${fmt(rsMes, 2)}/mês*`;
+    }
+
+    // ==================== COMPARTILHAMENTO ====================
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function copySummary(tipo) {
+      const text = summaries[tipo];
+      if (!text) return;
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => showToast('Resumo copiado!'));
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Resumo copiado!');
+      }
+    }
+
+    function sendWhatsApp(tipo) {
+      const text = summaries[tipo];
+      if (!text) return;
+      const url = 'https://wa.me/?text=' + encodeURIComponent(text);
+      window.open(url, '_blank');
+    }
+
+    // Inicializa todos os cálculos ao abrir
+    calcCabos();
+    calcBateria();
+    calcConv();
+    calcConsumo();
+  </script>
+</body>
+</html>
